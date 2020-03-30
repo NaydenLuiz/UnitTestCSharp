@@ -53,6 +53,38 @@ namespace MyClassesTest
         }
 
         [TestMethod]
+        [DataSource("System.Data.SqlClient","Database=SandBox;Integrated Security=Yes", "tests.FileProcessTest", DataAccessMethod.Sequential)]
+        public void FileExistsTestFromDB()
+        {
+            FileProcess fp = new FileProcess();
+            string filename;
+            bool expectedValue;
+            bool causesException;
+            bool fromCall;
+
+
+            filename = TestContext.DataRow["FileName"].ToString();
+            expectedValue = Convert.ToBoolean(TestContext.DataRow["ExpectedValue"]);
+            causesException = Convert.ToBoolean(TestContext.DataRow["CausesException"]);
+
+            try
+            {
+                fromCall = fp.FileExists(filename);
+                Assert.AreEqual(expectedValue, fromCall, "File Name: " + filename + " has Failed it's existence test in test: FileExistsTestFromDB()");
+            }
+            catch (AssertFailedException ex)
+            {
+                throw ex;
+            }
+            catch (ArgumentNullException)
+            {
+                Assert.IsTrue(causesException);
+            }
+
+        }
+
+
+        [TestMethod]
         public void FileNameDoesExistSimpleMessage()
         {
             FileProcess fp = new FileProcess();
